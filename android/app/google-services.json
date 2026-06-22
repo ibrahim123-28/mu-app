@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "168565684351",
+    "project_id": "mu-study-app-7dea6",
+    "storage_bucket": "mu-study-app-7dea6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168565684351:android:7f9b92685d09939a2c274a",
+        "android_client_info": {
+          "package_name": "com.example.mu_study_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApuhnoYv4_Kg3V8EW6GFxHjPVhbzBsG04"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
