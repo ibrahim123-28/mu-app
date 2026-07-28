@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="mu_study_app"
         android:name="${applicationName}"
@@ -44,4 +45,16 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+    <!-- Dusri apps ki list ke bahar, par </manifest> se pehle -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="http" />
+        </intent>
+    </queries>
 </manifest>
+

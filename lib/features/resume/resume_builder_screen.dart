@@ -23,11 +23,17 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
   final TextEditingController _phoneCtrl = TextEditingController();
   final TextEditingController _linkedinCtrl = TextEditingController();
   final TextEditingController _githubCtrl = TextEditingController();
+  final TextEditingController _portfolioCtrl = TextEditingController(); // 🚀 NEW: Portfolio
+  
   final TextEditingController _summaryCtrl = TextEditingController();
+  final TextEditingController _courseworkCtrl = TextEditingController(); // 🚀 NEW: ATS Keywords
+  
   final TextEditingController _techSkillsCtrl = TextEditingController();
   final TextEditingController _toolsCtrl = TextEditingController();
+  
   final TextEditingController _experienceCtrl = TextEditingController();
   final TextEditingController _projectsCtrl = TextEditingController();
+  
   final TextEditingController _eduCtrl = TextEditingController();
   final TextEditingController _certCtrl = TextEditingController();
 
@@ -50,11 +56,17 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
         _phoneCtrl.text = resumeData['phone'] ?? '';
         _linkedinCtrl.text = resumeData['linkedin'] ?? '';
         _githubCtrl.text = resumeData['github'] ?? '';
+        _portfolioCtrl.text = resumeData['portfolio'] ?? '';
+        
         _summaryCtrl.text = resumeData['summary'] ?? '';
+        _courseworkCtrl.text = resumeData['coursework'] ?? '';
+        
         _techSkillsCtrl.text = resumeData['tech_skills'] ?? '';
         _toolsCtrl.text = resumeData['tools'] ?? '';
+        
         _experienceCtrl.text = resumeData['experience'] ?? '';
         _projectsCtrl.text = resumeData['projects'] ?? '';
+        
         _eduCtrl.text = resumeData['education'] ?? '';
         _certCtrl.text = resumeData['certifications'] ?? '';
         
@@ -71,7 +83,9 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
       'phone': _phoneCtrl.text,
       'linkedin': _linkedinCtrl.text,
       'github': _githubCtrl.text,
+      'portfolio': _portfolioCtrl.text,
       'summary': _summaryCtrl.text,
+      'coursework': _courseworkCtrl.text,
       'tech_skills': _techSkillsCtrl.text,
       'tools': _toolsCtrl.text,
       'experience': _experienceCtrl.text,
@@ -81,54 +95,53 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
     });
   }
 
-  // --- 3. REFINED ATS PDF GENERATOR ENGINE ---
+  // --- 3. PREMIUM ATS-COMPLIANT PDF GENERATOR ---
   Future<pw.Document> _generateAtsResume() async {
     final pdf = pw.Document();
     
-    // Clean, professional fonts
+    // Standard ATS-Safe Fonts
     final font = pw.Font.helvetica();
     final fontBold = pw.Font.helveticaBold();
     
-    // Refined color palette (Dark Navy for headings, rich charcoal for text)
-    final primaryNavy = PdfColor.fromHex('#1B263B'); 
-    final accentLine = PdfColor.fromHex('#415A77');
-    final darkCharcoal = PdfColor.fromHex('#2D2D2D');
+    // Premium Corporate Colors
+    final primaryColor = PdfColor.fromHex('#1A365D'); // Deep Navy Blue
+    final darkGray = PdfColor.fromHex('#2D3748'); // Readability gray
+    final lightLine = PdfColor.fromHex('#CBD5E0');
 
     pdf.addPage(
-      pw.Page(
+      pw.MultiPage( // Changed to MultiPage to handle long resumes automatically
         pageFormat: PdfPageFormat.a4,
-        margin: const pw.EdgeInsets.symmetric(horizontal: 45, vertical: 40),
+        margin: const pw.EdgeInsets.symmetric(horizontal: 40, vertical: 40),
         build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              // --- HEADER SECTION ---
-              pw.Center(
-                child: pw.Column(
-                  children: [
-                    pw.Text(
-                      _nameCtrl.text.isEmpty ? "YOUR FULL NAME" : _nameCtrl.text.toUpperCase(),
-                      style: pw.TextStyle(font: fontBold, fontSize: 26, color: primaryNavy, letterSpacing: 1.5),
-                    ),
-                    pw.SizedBox(height: 6),
-                    pw.Text(
-                      _buildContactLine(),
-                      style: pw.TextStyle(font: font, fontSize: 10, color: darkCharcoal),
-                    ),
-                  ],
-                ),
+          return [
+            // --- HEADER: NAME & CONTACT ---
+            pw.Center(
+              child: pw.Column(
+                children: [
+                  pw.Text(
+                    _nameCtrl.text.isEmpty ? "YOUR FULL NAME" : _nameCtrl.text.toUpperCase(),
+                    style: pw.TextStyle(font: fontBold, fontSize: 22, color: primaryColor, letterSpacing: 1.2),
+                  ),
+                  pw.SizedBox(height: 6),
+                  pw.Text(
+                    _buildContactLine(),
+                    style: pw.TextStyle(font: font, fontSize: 10, color: darkGray),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ],
               ),
-              pw.SizedBox(height: 12),
+            ),
+            pw.SizedBox(height: 16),
 
-              // --- DYNAMIC SECTIONS ---
-              _buildRefinedSection("PROFESSIONAL SUMMARY", _summaryCtrl.text, primaryNavy, accentLine, font, fontBold),
-              _buildRefinedSection("TECHNICAL SKILLS", _buildSkillsText(), primaryNavy, accentLine, font, fontBold),
-              _buildRefinedSection("WORK EXPERIENCE", _experienceCtrl.text, primaryNavy, accentLine, font, fontBold),
-              _buildRefinedSection("PROJECTS", _projectsCtrl.text, primaryNavy, accentLine, font, fontBold),
-              _buildRefinedSection("EDUCATION", _eduCtrl.text, primaryNavy, accentLine, font, fontBold),
-              _buildRefinedSection("CERTIFICATIONS & ACHIEVEMENTS", _certCtrl.text, primaryNavy, accentLine, font, fontBold),
-            ],
-          );
+            // --- SECTIONS ---
+            _buildAtsSection("PROFESSIONAL SUMMARY", _summaryCtrl.text, primaryColor, lightLine, font, fontBold, isBullet: false),
+            _buildAtsSection("EDUCATION", _eduCtrl.text, primaryColor, lightLine, font, fontBold, isBullet: true),
+            _buildAtsSection("RELEVANT COURSEWORK", _courseworkCtrl.text, primaryColor, lightLine, font, fontBold, isBullet: false),
+            _buildAtsSection("TECHNICAL SKILLS", _buildSkillsText(), primaryColor, lightLine, font, fontBold, isBullet: false),
+            _buildAtsSection("EXPERIENCE", _experienceCtrl.text, primaryColor, lightLine, font, fontBold, isBullet: true),
+            _buildAtsSection("PROJECTS", _projectsCtrl.text, primaryColor, lightLine, font, fontBold, isBullet: true),
+            _buildAtsSection("CERTIFICATIONS & ACHIEVEMENTS", _certCtrl.text, primaryColor, lightLine, font, fontBold, isBullet: true),
+          ];
         },
       ),
     );
@@ -139,39 +152,69 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
     List<String> contacts = [];
     if (_phoneCtrl.text.isNotEmpty) contacts.add(_phoneCtrl.text);
     if (_emailCtrl.text.isNotEmpty) contacts.add(_emailCtrl.text);
-    if (_linkedinCtrl.text.isNotEmpty) contacts.add(_linkedinCtrl.text);
-    if (_githubCtrl.text.isNotEmpty) contacts.add(_githubCtrl.text);
-    return contacts.join("  •  ");
+    if (_linkedinCtrl.text.isNotEmpty) contacts.add(_linkedinCtrl.text.replaceAll('https://www.', ''));
+    if (_githubCtrl.text.isNotEmpty) contacts.add(_githubCtrl.text.replaceAll('https://', ''));
+    if (_portfolioCtrl.text.isNotEmpty) contacts.add(_portfolioCtrl.text.replaceAll('https://', ''));
+    return contacts.join("  |  ");
   }
 
   String _buildSkillsText() {
     String skills = "";
     if (_techSkillsCtrl.text.isNotEmpty) skills += "Languages/Frameworks: ${_techSkillsCtrl.text}\n";
-    if (_toolsCtrl.text.isNotEmpty) skills += "Tools/Cloud: ${_toolsCtrl.text}";
+    if (_toolsCtrl.text.isNotEmpty) skills += "Tools & Databases: ${_toolsCtrl.text}";
     return skills.trim();
   }
 
-  // Refined Section Builder
-  pw.Widget _buildRefinedSection(String title, String content, PdfColor headingColor, PdfColor lineColor, pw.Font font, pw.Font fontBold) {
+  // 🚀 SMART ATS FORMATTER: Converts raw text dashes into neat PDF bullets
+  pw.Widget _buildFormattedContent(String text, pw.Font font, pw.Font fontBold, bool isBullet) {
+    final lines = text.split('\n');
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: lines.map((line) {
+        if (line.trim().isEmpty) return pw.SizedBox(height: 4);
+        
+        // If line starts with a bullet/dash, format it nicely
+        if (line.trim().startsWith('-') || line.trim().startsWith('•') || line.trim().startsWith('*')) {
+          return pw.Padding(
+            padding: const pw.EdgeInsets.only(bottom: 3, left: 8),
+            child: pw.Row(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text("•  ", style: pw.TextStyle(font: font, fontSize: 10, color: PdfColors.black)),
+                pw.Expanded(
+                  child: pw.Text(
+                    line.substring(1).trim(), 
+                    style: pw.TextStyle(font: font, fontSize: 10.5, color: PdfColors.grey900, lineSpacing: 1.4)
+                  )
+                ),
+              ]
+            ),
+          );
+        } else {
+          // It's a heading (like Job Title or Degree)
+          return pw.Padding(
+            padding: const pw.EdgeInsets.only(top: 6, bottom: 2),
+            child: pw.Text(
+              line.trim(), 
+              style: pw.TextStyle(font: isBullet ? fontBold : font, fontSize: 11, color: PdfColors.black)
+            ),
+          );
+        }
+      }).toList(),
+    );
+  }
+
+  pw.Widget _buildAtsSection(String title, String content, PdfColor headingColor, PdfColor lineColor, pw.Font font, pw.Font fontBold, {required bool isBullet}) {
     if (content.trim().isEmpty) return pw.SizedBox.shrink();
-    
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
+        pw.Text(title, style: pw.TextStyle(font: fontBold, fontSize: 12, color: headingColor, letterSpacing: 1.1)),
+        pw.Container(margin: const pw.EdgeInsets.only(top: 4, bottom: 8), height: 1, color: lineColor),
+        isBullet 
+          ? _buildFormattedContent(content, font, fontBold, isBullet)
+          : pw.Text(content, style: pw.TextStyle(font: font, fontSize: 10.5, color: PdfColors.grey900, lineSpacing: 1.5)),
         pw.SizedBox(height: 16),
-        pw.Text(
-          title.toUpperCase(),
-          style: pw.TextStyle(font: fontBold, fontSize: 13, color: headingColor, letterSpacing: 1.2),
-        ),
-        pw.Container(
-          margin: const pw.EdgeInsets.only(top: 4, bottom: 10),
-          height: 1.2,
-          color: lineColor,
-        ),
-        pw.Text(
-          content,
-          style: pw.TextStyle(font: font, fontSize: 10.5, color: PdfColors.black, lineSpacing: 1.6),
-        ),
       ],
     );
   }
@@ -179,7 +222,8 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
   @override
   void dispose() {
     _nameCtrl.dispose(); _emailCtrl.dispose(); _phoneCtrl.dispose();
-    _linkedinCtrl.dispose(); _githubCtrl.dispose(); _summaryCtrl.dispose();
+    _linkedinCtrl.dispose(); _githubCtrl.dispose(); _portfolioCtrl.dispose();
+    _summaryCtrl.dispose(); _courseworkCtrl.dispose();
     _techSkillsCtrl.dispose(); _toolsCtrl.dispose(); _experienceCtrl.dispose();
     _projectsCtrl.dispose(); _eduCtrl.dispose(); _certCtrl.dispose();
     super.dispose();
@@ -206,8 +250,8 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
           currentStep: _currentStep,
           onStepTapped: (step) => setState(() => _currentStep = step),
           onStepContinue: () {
-            _saveResumeData(); // Auto-Save trigger
-            final isLastStep = _currentStep == 4;
+            _saveResumeData(); 
+            final isLastStep = _currentStep == 5; // 🚀 Increased steps
             if (isLastStep) {
               Navigator.push(
                 context,
@@ -226,7 +270,7 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
             if (_currentStep > 0) setState(() => _currentStep -= 1);
           },
           controlsBuilder: (BuildContext context, ControlsDetails details) {
-            final isLastStep = _currentStep == 4;
+            final isLastStep = _currentStep == 5;
             return Container(
               margin: const EdgeInsets.only(top: 20),
               child: Row(
@@ -236,11 +280,11 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF5A67D8),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       onPressed: details.onStepContinue,
-                      child: Text(isLastStep ? "View Live Preview" : "Save & Next", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      child: Text(isLastStep ? "View ATS Resume" : "Save & Next", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -248,9 +292,9 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
                     Expanded(
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.grey,
-                          side: const BorderSide(color: Colors.grey),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          foregroundColor: Colors.grey.shade700,
+                          side: BorderSide(color: Colors.grey.shade400),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         onPressed: details.onStepCancel,
@@ -264,64 +308,75 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
           steps: [
             Step(
               isActive: _currentStep >= 0,
-              title: const Text("Contact Info", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              title: const Text("Contact Info", style: TextStyle(fontWeight: FontWeight.bold)),
               content: Column(
                 children: [
-                  _buildTextField(_nameCtrl, "Full Name"),
-                  const SizedBox(height: 12),
+                  _buildTextField(_nameCtrl, "Full Name (e.g., Ibrahim)"),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
                       Expanded(child: _buildTextField(_emailCtrl, "Email")),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
                       Expanded(child: _buildTextField(_phoneCtrl, "Phone")),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  _buildTextField(_linkedinCtrl, "LinkedIn URL (Optional)"),
-                  const SizedBox(height: 12),
-                  _buildTextField(_githubCtrl, "GitHub URL (Optional)"),
+                  const SizedBox(height: 10),
+                  _buildTextField(_linkedinCtrl, "LinkedIn URL"),
+                  const SizedBox(height: 10),
+                  _buildTextField(_githubCtrl, "GitHub URL"),
+                  const SizedBox(height: 10),
+                  _buildTextField(_portfolioCtrl, "Portfolio Website (Optional)"),
                 ],
               ),
             ),
             Step(
               isActive: _currentStep >= 1,
-              title: const Text("Summary & Skills", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              title: const Text("Summary & Coursework", style: TextStyle(fontWeight: FontWeight.bold)),
               content: Column(
                 children: [
-                  _buildTextField(_summaryCtrl, "Professional Summary (2-4 lines)", maxLines: 3),
-                  const SizedBox(height: 12),
-                  _buildTextField(_techSkillsCtrl, "Languages & Frameworks (e.g. Python, Flutter, React)"),
-                  const SizedBox(height: 12),
-                  _buildTextField(_toolsCtrl, "Tools & Cloud (e.g. Git, AWS, Firebase, Docker)"),
+                  _buildTextField(_summaryCtrl, "Professional Summary (Highly impactful 3 lines)", maxLines: 3),
+                  const SizedBox(height: 10),
+                  _buildTextField(_courseworkCtrl, "Relevant Coursework (e.g., Data Structures, Computer Networks, MERN, AI)"),
                 ],
               ),
             ),
             Step(
               isActive: _currentStep >= 2,
-              title: const Text("Work Experience", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              content: _buildTextField(
-                _experienceCtrl, 
-                "Format:\nJob Title | Company | Duration\n• Action Verb + Task + Metric (e.g., Developed API reducing load time by 30%)", 
-                maxLines: 6
+              title: const Text("Technical Skills", style: TextStyle(fontWeight: FontWeight.bold)),
+              content: Column(
+                children: [
+                  _buildTextField(_techSkillsCtrl, "Languages & Frameworks (e.g., Python, React, Next.js, Node.js)"),
+                  const SizedBox(height: 10),
+                  _buildTextField(_toolsCtrl, "Tools & Cloud (e.g., Git, MongoDB, AWS, Figma)"),
+                ],
               ),
             ),
             Step(
               isActive: _currentStep >= 3,
-              title: const Text("Projects", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              title: const Text("Projects (Crucial for Tech)", style: TextStyle(fontWeight: FontWeight.bold)),
               content: _buildTextField(
                 _projectsCtrl, 
-                "Format:\nProject Name | Tech Stack\n• Impact Point 1\n• Impact Point 2", 
-                maxLines: 6
+                "Example Format:\nSmart ERP System | React, Node.js\n- Built an AI-powered study planner reducing prep time by 30%\n- Implemented secure Firebase authentication", 
+                maxLines: 7
               ),
             ),
             Step(
               isActive: _currentStep >= 4,
-              title: const Text("Education & Certifications", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              title: const Text("Work Experience", style: TextStyle(fontWeight: FontWeight.bold)),
+              content: _buildTextField(
+                _experienceCtrl, 
+                "Example Format:\nFreelance Developer | Self-Employed | 2024 - Present\n- Developed 3+ scalable SaaS applications using MERN stack\n- Designed Bento-grid UIs improving user retention", 
+                maxLines: 6
+              ),
+            ),
+            Step(
+              isActive: _currentStep >= 5,
+              title: const Text("Education & Certifications", style: TextStyle(fontWeight: FontWeight.bold)),
               content: Column(
                 children: [
-                  _buildTextField(_eduCtrl, "Degree | University | CGPA", maxLines: 2),
-                  const SizedBox(height: 12),
-                  _buildTextField(_certCtrl, "Certifications & Achievements (Optional)", maxLines: 3),
+                  _buildTextField(_eduCtrl, "Example:\nB.Sc Computer Science | Mumbai University | 2026\n- CGPA: 8.5/10", maxLines: 3),
+                  const SizedBox(height: 10),
+                  _buildTextField(_certCtrl, "Certifications (e.g., AWS Cloud Practitioner, Meta Front-End)", maxLines: 3),
                 ],
               ),
             ),
@@ -340,7 +395,7 @@ class _ResumeBuilderScreenState extends ConsumerState<ResumeBuilderScreen> {
         alignLabelWithHint: maxLines > 1,
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Colors.black12)),
         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF5A67D8), width: 2)),
       ),
@@ -362,7 +417,7 @@ class PdfPreviewScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF5A67D8),
-        title: const Text("Resume Preview", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text("Live Resume Preview", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: FutureBuilder<pw.Document>(

@@ -8,7 +8,12 @@ import '../profile/profile_screen.dart';
 import '../planner/planner_screen.dart';
 import '../../core/services/auth_service.dart';
 import '../resume/resume_builder_screen.dart';
-
+import '../timetable/batch_action_sheet.dart';
+import '../timetable/my_classes_screen.dart';
+import '../placement/placement_screen.dart';
+ // Apna path check kar lena agar alag folder me rakha ho
+// 🚀 AI Provider import karna zaroori hai
+import '../ai_tutor/providers/ai_provider.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -198,10 +203,7 @@ class DashboardScreen extends ConsumerWidget {
                       );
                     }
                   ),
-                  const SizedBox(height: 24),
-
-                  // Quick Access Menu
-                  const Text("Quick Access", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                 const Text("Quick Access", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -220,8 +222,8 @@ class DashboardScreen extends ConsumerWidget {
                         }),
                         const SizedBox(width: 16),
                         _buildQuickAccessBtn(Icons.work_outline, "Placement", () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const PlacementScreen()));
-                        }),
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const PlacementDashboard()));
+                  }),
                         const SizedBox(width: 16),
                         _buildQuickAccessBtn(Icons.calendar_month_outlined, "Planner", () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const PlannerScreen()));
@@ -230,7 +232,33 @@ class DashboardScreen extends ConsumerWidget {
                         _buildQuickAccessBtn(Icons.assignment_ind_outlined, "Resume", () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const ResumeBuilderScreen()));
                         }),
-                       
+                        
+                        // 🚀 Yahan spacing missing thi, wo add kar di hai
+                        const SizedBox(width: 16), 
+
+                       _buildQuickAccessBtn(Icons.group_add_outlined, "Class", () {
+                          final userId = userDoc.id;
+                          // 🚀 Check if user has joined any classes
+                          final joinedClasses = userData?['joined_classes'] as List<dynamic>? ?? [];
+
+                          if (joinedClasses.isEmpty) {
+                            // Agar koi class nahi hai, toh direct Join/Create Sheet kholo
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => BatchActionSheet(userId: userId),
+                            );
+                          } else {
+                            // Agar class hai, toh My Classes wali List Screen kholo
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MyClassesScreen(userId: userId),
+                              ),
+                            );
+                          }
+                        }),
                       ],
                     ),
                   )
@@ -254,9 +282,12 @@ class DashboardScreen extends ConsumerWidget {
               } else if (index == 2) {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const TestsScreen()));
               } else if (index == 3) {
-                // AI Screen isn't built yet, so we show a message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("AI Doubt Solver coming soon! 🤖"), backgroundColor: Color(0xFF5A67D8)),
+                // 🚀 YAHAN AI BOTTOM SHEET KHULEGA 🚀
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => const NexusAiBottomSheet(),
                 );
               } else if (index == 4) {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
@@ -313,6 +344,165 @@ class DashboardScreen extends ConsumerWidget {
           Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
         ],
       ),
+    );
+  }
+}
+
+// =========================================================================
+// 🤖 NEXUS AI BOTTOM SHEET (Alag Widget taaki Dashboard clean rahe)
+// =========================================================================
+class NexusAiBottomSheet extends ConsumerStatefulWidget {
+  const NexusAiBottomSheet({super.key});
+
+  @override
+  ConsumerState<NexusAiBottomSheet> createState() => _NexusAiBottomSheetState();
+}
+
+class _NexusAiBottomSheetState extends ConsumerState<NexusAiBottomSheet> {
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _textController = TextEditingController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final chatState = ref.watch(aiChatProvider);
+
+    // Naya message aane par scroll ko bottom par le jana
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.75,
+      minChildSize: 0.4,
+      maxChildSize: 0.9,
+      builder: (context, sheetController) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          child: Container(
+            color: const Color(0xFF0D0E15), // Premium Dark Background
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 40, height: 5,
+                  decoration: BoxDecoration(color: Colors.white30, borderRadius: BorderRadius.circular(10)),
+                ),
+                
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.smart_toy, color: Color(0xFF5A67D8)),
+                      const SizedBox(width: 10),
+                      const Text("NEXUS AI", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.grey),
+                        onPressed: () => Navigator.pop(context),
+                      )
+                    ],
+                  ),
+                ),
+                const Divider(color: Colors.white10),
+                
+                // Chat List
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(12),
+                    itemCount: chatState.messages.length,
+                    itemBuilder: (context, index) {
+                      final msg = chatState.messages[index];
+                      return Align(
+                        alignment: msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: msg.isUser ? const Color(0xFF5A67D8) : Colors.white12,
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(16),
+                              topRight: const Radius.circular(16),
+                              bottomLeft: Radius.circular(msg.isUser ? 16 : 0),
+                              bottomRight: Radius.circular(msg.isUser ? 0 : 16),
+                            ),
+                          ),
+                          child: Text(msg.text, style: const TextStyle(color: Colors.white, fontSize: 13)),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                // AI Loading Indicator
+                if (chatState.isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF5A67D8))),
+                        SizedBox(width: 10),
+                        Text("Nexus is typing...", style: TextStyle(color: Color(0xFF5A67D8), fontSize: 12)),
+                      ],
+                    ),
+                  ),
+
+                // Input Box
+                Padding(
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 10, left: 12, right: 12, top: 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _textController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: "Ask doubt...",
+                            hintStyle: const TextStyle(color: Colors.grey),
+                            filled: true,
+                            fillColor: Colors.white10,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF5A67D8)),
+                        child: IconButton(
+                          icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                          onPressed: () {
+                            if (_textController.text.trim().isNotEmpty) {
+                              ref.read(aiChatProvider.notifier).sendMessage(_textController.text);
+                              _textController.clear();
+                            }
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
