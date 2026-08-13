@@ -20,10 +20,15 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   bool isWebViewLoading = true;
   bool isWebPdfLoading = true;
 
+  late String _finalUrl;
+
   @override
   void initState() {
     super.initState();
     
+    // 🚀 Smart Link Transformer Logic
+    _finalUrl = _getFormattedPdfUrl(widget.pdfUrl, kIsWeb);
+
     // WebView sirf tabhi initialize hoga jab app Mobile par ho
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       controller = WebViewController()
@@ -31,15 +36,43 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         ..setNavigationDelegate(
           NavigationDelegate(
             onPageStarted: (String url) {
-              setState(() { isWebViewLoading = true; });
+              if (mounted) setState(() { isWebViewLoading = true; });
             },
             onPageFinished: (String url) {
-              setState(() { isWebViewLoading = false; });
+              if (mounted) setState(() { isWebViewLoading = false; });
             },
           ),
         )
-        ..loadRequest(Uri.parse(widget.pdfUrl));
+        ..loadRequest(Uri.parse(_finalUrl));
     }
+  }
+
+  // 🚀 HELPER: Extracts Google Drive File ID & formats for Web/Mobile
+  String _getFormattedPdfUrl(String rawUrl, bool isWeb) {
+    String? fileId;
+
+    // File ID extract kar rahe hain (Har format se)
+    if (rawUrl.contains('/file/d/')) {
+      final match = RegExp(r'/file/d/([a-zA-Z0-9_-]+)').firstMatch(rawUrl);
+      if (match != null) fileId = match.group(1);
+    } else if (rawUrl.contains('id=')) {
+      final match = RegExp(r'id=([a-zA-Z0-9_-]+)').firstMatch(rawUrl);
+      if (match != null) fileId = match.group(1);
+    }
+
+    // Agar Drive link mili hai:
+    if (fileId != null) {
+      if (isWeb) {
+        // Web Syncfusion requires DIRECT raw PDF link
+        return 'https://drive.google.com/uc?export=download&id=$fileId';
+      } else {
+        // Mobile WebView requires Google Docs Embedded Viewer
+        return 'https://docs.google.com/viewer?url=${Uri.encodeComponent('https://drive.google.com/uc?export=download&id=$fileId')}&embedded=true';
+      }
+    }
+
+    // Direct PDF hai toh as-it-is bhej do
+    return rawUrl;
   }
 
   @override
@@ -61,13 +94,13 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
           children: [
             // Syncfusion renderer for Web
             SfPdfViewer.network(
-              widget.pdfUrl,
+              _finalUrl,
               canShowScrollHead: false,
               onDocumentLoaded: (details) {
-                setState(() { isWebPdfLoading = false; });
+                if (mounted) setState(() { isWebPdfLoading = false; });
               },
               onDocumentLoadFailed: (details) {
-                setState(() { isWebPdfLoading = false; });
+                if (mounted) setState(() { isWebPdfLoading = false; });
               },
             ),
             

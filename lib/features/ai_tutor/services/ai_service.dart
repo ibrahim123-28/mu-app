@@ -3,7 +3,7 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 class AiService {
   // TODO: Google AI Studio se free API key nikal kar yahan daal dena
   // Pro Tip: Production me isko .env file me hide karke rakhna
-  static const String _apiKey = 'AQ.Ab8RN6KPuUneIqn6Q7u-AyGkpcqZsBd5UJPEB77BQWNpaXFyhw'; 
+  static String _apiKey = 'AQ.Ab8RN6KPuUneIqn6Q7u-AyGkpcqZsBd5UJPEB77BQWNpaXFyhw';
   
   late final GenerativeModel _model;
   late final ChatSession _chat;

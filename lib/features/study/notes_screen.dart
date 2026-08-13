@@ -23,7 +23,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
       "Sem 2": ["Design & Analysis of Algorithms", "Object Oriented Programming", "Web Technologies", "Database Management Systems using PL/SQL", "Advanced Python Programming"],
       "Sem 3": ["Principles of Operating Systems", "Theory of Computation", "Data Structures", "Java Programming"],
       "Sem 4": ["Computer Networks", "Software Engineering", "IoT Technologies", "Mobile Application Development", "MEAN Stack Development"],
-      "Sem 5": ["Artificial Intelligence", "Cyber & Information Security", "Moral & Ethical AI", "Ethical Hacking", "Software Testing & Quality Assurance", "Wireless & Sensor Networks"],
+      "Sem 5": ["Artificial Intelligence", "Cyber and Information Security", "Ethical Hacking", "Software Testing and Quality Assurance"],
       "Sem 6": ["Data Science", "Cloud Computing", "Software Project Management", "Information Retrieval", "Linux Server Administration"],
     },
     "B.Sc Information Tech": {

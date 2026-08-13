@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../study/notes_screen.dart';
-import '../tests/tests_screen.dart';
+//import '../tests/tests_screen.dart';
 import '../tools/cgpa_calc.dart';
 import '../placement/placement_screen.dart';
 import '../profile/profile_screen.dart';
@@ -10,10 +10,11 @@ import '../../core/services/auth_service.dart';
 import '../resume/resume_builder_screen.dart';
 import '../timetable/batch_action_sheet.dart';
 import '../timetable/my_classes_screen.dart';
-import '../placement/placement_screen.dart';
- // Apna path check kar lena agar alag folder me rakha ho
+// Apna path check kar lena agar alag folder me rakha ho
 // 🚀 AI Provider import karna zaroori hai
 import '../ai_tutor/providers/ai_provider.dart';
+// 🚀 1. YAHAN NAYA IMPORT ADD KIYA HAI PROJECT SCREEN KE LIYE 🚀
+import '../projects/projects_screen.dart'; 
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -212,10 +213,10 @@ class DashboardScreen extends ConsumerWidget {
                         _buildQuickAccessBtn(Icons.description_outlined, "Notes", () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const NotesScreen()));
                         }),
-                        const SizedBox(width: 16),
-                        _buildQuickAccessBtn(Icons.edit_note, "Tests", () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const TestsScreen()));
-                        }),
+                       // const SizedBox(width: 16),
+                        //_buildQuickAccessBtn(Icons.edit_note, "Tests", () {
+                        //  Navigator.push(context, MaterialPageRoute(builder: (context) => const TestsScreen()));
+                        //}),
                         const SizedBox(width: 16),
                         _buildQuickAccessBtn(Icons.calculate_outlined, "CGPA", () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const CgpaCalculatorScreen()));
@@ -233,7 +234,6 @@ class DashboardScreen extends ConsumerWidget {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const ResumeBuilderScreen()));
                         }),
                         
-                        // 🚀 Yahan spacing missing thi, wo add kar di hai
                         const SizedBox(width: 16), 
 
                        _buildQuickAccessBtn(Icons.group_add_outlined, "Class", () {
@@ -259,6 +259,13 @@ class DashboardScreen extends ConsumerWidget {
                             );
                           }
                         }),
+                        
+                        // 🚀 2. YAHAN PROJECTS BUTTON ADD KIYA HAI 🚀
+                        const SizedBox(width: 16),
+                        _buildQuickAccessBtn(Icons.emoji_objects_outlined, "Projects", () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const ProjectsScreen()));
+                        }),
+
                       ],
                     ),
                   )
@@ -279,8 +286,6 @@ class DashboardScreen extends ConsumerWidget {
                 // Do nothing, already on Home
               } else if (index == 1) {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const NotesScreen()));
-              } else if (index == 2) {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const TestsScreen()));
               } else if (index == 3) {
                 // 🚀 YAHAN AI BOTTOM SHEET KHULEGA 🚀
                 showModalBottomSheet(
@@ -346,6 +351,7 @@ class DashboardScreen extends ConsumerWidget {
       ),
     );
   }
+  
 }
 
 // =========================================================================
@@ -408,7 +414,7 @@ class _NexusAiBottomSheetState extends ConsumerState<NexusAiBottomSheet> {
                     children: [
                       const Icon(Icons.smart_toy, color: Color(0xFF5A67D8)),
                       const SizedBox(width: 10),
-                      const Text("NEXUS AI", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                      const Text("NEXUS AI", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                       const Spacer(),
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.grey),

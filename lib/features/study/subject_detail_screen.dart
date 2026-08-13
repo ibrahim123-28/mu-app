@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'pyq_list_screen.dart'; // Make sure this is imported
+import 'pyq_list_screen.dart'; 
+import 'notes_list_screen.dart'; // 🚀 NAYI FILE KA IMPORT
 
 class SubjectDetailScreen extends StatelessWidget {
   final String subjectName;
@@ -69,16 +70,22 @@ class SubjectDetailScreen extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
                       onTap: () {
-                        // LOGIC: Check if the clicked card is "University PYQs"
+                        // 🚀 LOGIC UPDATED HERE:
                         if (resources[index]["title"] == "University PYQs") {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              // Pass the dynamic subjectName instead of hardcoded text
                               builder: (context) => PyqListScreen(subjectName: subjectName),
                             ),
                           );
-                        } else {
+                        } else if (resources[index]["title"] == "Unit-wise Notes") {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => NotesListScreen(subjectName: subjectName),
+    ),
+  );
+} else {
                           // Default action for other cards
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("Loading ${resources[index]['title']} for $subjectName...")),

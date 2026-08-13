@@ -146,7 +146,7 @@ class _AddSlotSheetState extends State<AddSlotSheet> {
         return;
       }
 
-      // Fetch all slots for this day
+      // Fetch all existing slots for this class and this specific day
       final daySlots = await FirebaseFirestore.instance
           .collection('timetable_slots')
           .where('class_id', isEqualTo: widget.classId)
@@ -158,19 +158,16 @@ class _AddSlotSheetState extends State<AddSlotSheet> {
         int existingStart = _timeToMinutes(existingData['start_time']);
         int existingEnd = _timeToMinutes(existingData['end_time']);
         
-        // Time Overlap Math
+        // 🚀 Strict Overlap Math formula: (StartA < EndB) && (EndA > StartB)
         bool isOverlapping = (newStart < existingEnd && newEnd > existingStart);
 
         if (isOverlapping) {
           setState(() => _isLoading = false);
-          if (existingData['room_id'].toString().toLowerCase() == room.toLowerCase()) {
-            _showClashPopup(existingData, "Room Conflict Detected! ❌");
-            return;
-          }
-          if (existingData['teacher_name'].toString().toLowerCase() == teacher.toLowerCase()) {
-            _showClashPopup(existingData, "Professor Busy! ❌");
-            return;
-          }
+          
+          // 1. Check if student batch is already booked at this exact time slot
+          // (Ek student ek hi waqt me do alag lecture/lab attend nahi kar sakta)
+          _showClashPopup(existingData, "Time Clash Detected! ❌ (Already busy)");
+          return;
         }
       }
 

@@ -14,7 +14,7 @@ class ProfileScreen extends ConsumerWidget {
     final Color primaryColor = const Color(0xFF5A67D8);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: Colors.white, // 🚀 Background white rakha taaki bottom list match kare
       appBar: AppBar(
         backgroundColor: primaryColor,
         elevation: 0,
@@ -58,95 +58,98 @@ class ProfileScreen extends ConsumerWidget {
             }
           }
 
-          return Stack(
-            children: [
-              SingleChildScrollView(
-                physics: const BouncingScrollPhysics(), 
-                child: Column(
-                  children: [
-                    // Header Section
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.only(bottom: 50, top: 20), // Extra padding for hover
-                      decoration: BoxDecoration(
-                        color: primaryColor,
-                        borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
-                      ),
-                      child: Column(
-                        children: [
-                          const CircleAvatar(radius: 50, backgroundColor: Colors.white, child: Icon(Icons.person, size: 50, color: Color(0xFF5A67D8))),
-                          const SizedBox(height: 16),
-                          Text(capitalizedName, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white)),
-                          const SizedBox(height: 4),
-                          Text("$course • $sem", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white.withValues(alpha: 0.8))),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 40), // Space for hover card overlap
-                    
-                    // Menu Options
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Column(
-                        children: [
-                          _buildProfileOption(Icons.trending_up, "My Progress", context, () {}),
-                          _buildProfileOption(Icons.bookmark_border, "Bookmarks", context, () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => GlobalBookmarksScreen(userId: userDoc!.id)));
-                          }),
-                          _buildProfileOption(Icons.shopping_bag_outlined, "Purchased Content", context, () {}),
-                          const Divider(height: 40),
-                          _buildProfileOption(Icons.settings_outlined, "Settings", context, () {}),
-                          _buildProfileOption(Icons.help_outline, "Help & Support", context, () {}),
-                          const SizedBox(height: 20),
-                          
-                          // LOGOUT BUTTON
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.red, side: const BorderSide(color: Colors.red),
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              ),
-                              onPressed: () async {
-                                await ref.read(authServiceProvider).signOut();
-                                if (context.mounted) Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const LoginScreen()), (Route<dynamic> route) => false);
-                              },
-                              child: const Text("Log Out", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                            ),
-                          ),
-                          const SizedBox(height: 30),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // 🚀 SMART EXAM REVISION HOVER WIDGET
-              Positioned(
-                top: 180, // Overlaps the header bottom
-                left: 20,
-                right: 20,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
+          // 🚀 THE MAGIC FIX: Pura Stack ab ScrollView ke andar hai
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(), 
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // 1. TOP BLUE HEADER
+                Container(
+                  width: double.infinity,
+                  height: 250, // Fix height taaki card properly overlap kare
+                  padding: const EdgeInsets.only(top: 20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [BoxShadow(color: hoverColor.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 8))],
-                    border: Border.all(color: hoverColor.withValues(alpha: 0.2), width: 2),
+                    color: primaryColor,
+                    borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
                   ),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: hoverColor.withValues(alpha: 0.1), shape: BoxShape.circle), child: Icon(Icons.lightbulb_outline_rounded, color: hoverColor)),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text(hoverMessage, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: Colors.grey.shade800))),
-                      Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.grey.shade400)
+                      const CircleAvatar(radius: 50, backgroundColor: Colors.white, child: Icon(Icons.person, size: 50, color: Color(0xFF5A67D8))),
+                      const SizedBox(height: 16),
+                      Text(capitalizedName, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white)),
+                      const SizedBox(height: 4),
+                      Text("$course • $sem", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white.withValues(alpha: 0.8))),
                     ],
                   ),
                 ),
-              ),
-            ],
+                
+                // 2. BOTTOM MENU OPTIONS
+                Container(
+                  margin: const EdgeInsets.only(top: 230), // Blue header ke thoda upar se shuru
+                  padding: const EdgeInsets.only(top: 60, left: 20, right: 20), // Top padding for hover card
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildProfileOption(Icons.trending_up, "My Progress", context, () {}),
+                      _buildProfileOption(Icons.bookmark_border, "Bookmarks", context, () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => GlobalBookmarksScreen(userId: userDoc!.id)));
+                      }),
+                      _buildProfileOption(Icons.shopping_bag_outlined, "Purchased Content", context, () {}),
+                      const Divider(height: 40),
+                      _buildProfileOption(Icons.settings_outlined, "Settings", context, () {}),
+                      _buildProfileOption(Icons.help_outline, "Help & Support", context, () {}),
+                      const SizedBox(height: 20),
+                      
+                      // LOGOUT BUTTON
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red, side: const BorderSide(color: Colors.red),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                          onPressed: () async {
+                            await ref.read(authServiceProvider).signOut();
+                            if (context.mounted) Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const LoginScreen()), (Route<dynamic> route) => false);
+                          },
+                          child: const Text("Log Out", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
+
+                // 3. SMART EXAM REVISION HOVER WIDGET
+                Positioned(
+                  top: 195, // Ekdum border pe set kiya hua hai
+                  left: 20,
+                  right: 20,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [BoxShadow(color: hoverColor.withValues(alpha: 0.2), blurRadius: 15, offset: const Offset(0, 8))],
+                      border: Border.all(color: hoverColor.withValues(alpha: 0.2), width: 1.5),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: hoverColor.withValues(alpha: 0.1), shape: BoxShape.circle), child: Icon(Icons.lightbulb_outline_rounded, color: hoverColor)),
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(hoverMessage, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: Colors.grey.shade800))),
+                        Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.grey.shade400)
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           );
         }
       ),
@@ -157,9 +160,9 @@ class ProfileScreen extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white, borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))],
-        border: Border.all(color: Colors.grey.shade100),
+        color: const Color(0xFFF8F9FA), // Halki si grey shade
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
       ),
       child: ListTile(
         leading: Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: const Color(0xFF5A67D8).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: const Color(0xFF5A67D8))),
