@@ -1,6 +1,8 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart'; // Google Sign-in package added
 
 // 1. Provider for the AuthService class
 final authServiceProvider = Provider<AuthService>((ref) => AuthService());
@@ -45,7 +47,44 @@ class AuthService {
     }
   }
 
+  // Google Sign-In Method with Firestore Profile Generation
+  Future<UserCredential?> signInWithGoogle() async {
+    try {
+      // Trigger Google Sign-In dialog
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) return null; // User cancelled the login
+
+      // Extract Auth details
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in to Firebase
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final user = userCredential.user;
+
+      // Ensure Firestore profile exists for new Google users
+      if (user != null) {
+        final doc = await _db.collection('users').doc(user.uid).get();
+        if (!doc.exists) {
+          await _db.collection('users').doc(user.uid).set({
+            'uid': user.uid,
+            'email': user.email,
+            'name': user.displayName ?? 'Student',
+            'createdAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
+        }
+      }
+      return userCredential;
+    } catch (e) {
+      throw Exception("Google Sign-In Failed: ${e.toString()}");
+    }
+  }
+
   Future<void> signOut() async {
+    await GoogleSignIn().signOut(); // Clears Google session
     await _auth.signOut();
   }
 
@@ -83,6 +122,7 @@ class AuthService {
       return null;
     }
   }
+
   Future<void> saveAcademicRecords(Map<String, dynamic> data) async {
     final user = _auth.currentUser;
     if (user != null) {
@@ -90,6 +130,7 @@ class AuthService {
       await _db.collection('users').doc(user.uid).set(data, SetOptions(merge: true));
     }
   }
+
   // Update the last studied topic
   Future<void> updateLastStudied(String subjectName, String topicName, double progress) async {
     final user = _auth.currentUser;
@@ -103,6 +144,7 @@ class AuthService {
       }, SetOptions(merge: true));
     }
   }
+
   // Save Planner Data (Exam Date, Tasks, Attendance)
   Future<void> savePlannerData(Map<String, dynamic> data) async {
     final user = _auth.currentUser;
@@ -112,6 +154,7 @@ class AuthService {
       }, SetOptions(merge: true));
     }
   }
+
   // Save Resume Data
   Future<void> saveResumeData(Map<String, dynamic> data) async {
     final user = _auth.currentUser;

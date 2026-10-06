@@ -286,7 +286,7 @@ class DashboardScreen extends ConsumerWidget {
                 // Do nothing, already on Home
               } else if (index == 1) {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const NotesScreen()));
-              } else if (index == 3) {
+              } else if (index == 2) {
                 // 🚀 YAHAN AI BOTTOM SHEET KHULEGA 🚀
                 showModalBottomSheet(
                   context: context,
@@ -294,15 +294,15 @@ class DashboardScreen extends ConsumerWidget {
                   backgroundColor: Colors.transparent,
                   builder: (context) => const NexusAiBottomSheet(),
                 );
-              } else if (index == 4) {
+              } else if (index == 3) {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
               }
             },
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
               BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: "Study"),
-              BottomNavigationBarItem(icon: Icon(Icons.edit_note), label: "Tests"),
               BottomNavigationBarItem(icon: Icon(Icons.smart_toy_outlined), label: "AI"),
+              //BottomNavigationBarItem(icon: Icon(Icons.edit_note), label: "Tests"),
               BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: "Profile"),
             ],
           ),

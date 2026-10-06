@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:mu_study_app/features/attendance/attendance_screen.dart';
+//import 'package:mu_study_app/features/attendance/attendance_screen.dart';
 import 'add_slot_sheet.dart';
 import 'add_announcement_sheet.dart';
 import 'add_bookmark_sheet.dart'; // 🚀 WAPAS AA GAYA
@@ -234,13 +234,13 @@ class _ClassDashboardScreenState extends State<ClassDashboardScreen> with Single
                   Color accentColor = isLab ? const Color(0xFFF59E0B) : primaryColor;
 
                   return InkWell(
-                    onTap: () {
-                      if (widget.isCreator) {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => AttendanceScreen(classId: widget.classId, subjectName: subject, slotId: slotId)));
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Only teachers can mark attendance!")));
-                      }
-                    },
+                   // onTap: () {
+                    //  if (widget.isCreator) {
+                    //    Navigator.push(context, MaterialPageRoute(builder: (context) => AttendanceScreen(classId: widget.classId, subjectName: subject, slotId: slotId)));
+                    //  } else {
+                  //      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Only teachers can mark attendance!")));
+                     // }
+                   // },
                     borderRadius: BorderRadius.circular(24),
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 16),
