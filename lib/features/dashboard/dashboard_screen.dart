@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../study/notes_screen.dart';
+
 //import '../tests/tests_screen.dart';
 import '../tools/cgpa_calc.dart';
 import '../placement/placement_screen.dart';
@@ -11,7 +12,8 @@ import '../resume/resume_builder_screen.dart';
 import '../timetable/batch_action_sheet.dart';
 import '../timetable/my_classes_screen.dart';
 // Apna path check kar lena agar alag folder me rakha ho
-// 🚀 AI Provider import karna zaroori hai
+
+import 'package:mu_study_app/features/notification_screen.dart';
 import '../ai_tutor/providers/ai_provider.dart';
 // 🚀 1. YAHAN NAYA IMPORT ADD KIYA HAI PROJECT SCREEN KE LIYE 🚀
 import '../projects/projects_screen.dart'; 
@@ -85,7 +87,16 @@ class DashboardScreen extends ConsumerWidget {
                           const Text("Welcome Back", style: TextStyle(color: Colors.grey)),
                         ],
                       ),
-                      IconButton(icon: const Icon(Icons.notifications_none), onPressed: () {})
+                      IconButton(
+  icon: const Icon(Icons.notifications_none),
+  onPressed: () {
+    // Ye code user ko nayi Notification Screen par le jayega
+    Navigator.push(
+  context,
+  MaterialPageRoute(builder: (context) => NotificationScreen()), // Maine const hata diya hai
+);
+  },
+)
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -261,10 +272,11 @@ class DashboardScreen extends ConsumerWidget {
                         }),
                         
                         // 🚀 2. YAHAN PROJECTS BUTTON ADD KIYA HAI 🚀
-                        const SizedBox(width: 16),
-                        _buildQuickAccessBtn(Icons.emoji_objects_outlined, "Projects", () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const ProjectsScreen()));
-                        }),
+                        
+                        
+
+
+                        
 
                       ],
                     ),

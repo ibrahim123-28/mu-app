@@ -8,12 +8,12 @@ class SubjectDetailScreen extends StatelessWidget {
   const SubjectDetailScreen({super.key, required this.subjectName});
 
   final List<Map<String, dynamic>> resources = const [
-    {"title": "Syllabus PDF", "icon": Icons.picture_as_pdf_outlined, "color": Colors.red},
+   // {"title": "Syllabus PDF", "icon": Icons.picture_as_pdf_outlined, "color": Colors.red},
     {"title": "Unit-wise Notes", "icon": Icons.menu_book_outlined, "color": Colors.blue},
     {"title": "University PYQs", "icon": Icons.history_edu_outlined, "color": Colors.orange},
-    {"title": "Important Questions", "icon": Icons.star_border_outlined, "color": Colors.amber},
-    {"title": "Chapter-wise MCQ", "icon": Icons.fact_check_outlined, "color": Colors.green},
-    {"title": "Video Lectures", "icon": Icons.play_circle_outline, "color": Colors.purple},
+   // {"title": "Important Questions", "icon": Icons.star_border_outlined, "color": Colors.amber},
+   // {"title": "Chapter-wise MCQ", "icon": Icons.fact_check_outlined, "color": Colors.green},
+   // {"title": "Video Lectures", "icon": Icons.play_circle_outline, "color": Colors.purple},
   ];
 
   @override
